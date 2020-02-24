@@ -72,3 +72,26 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
+//@desc     Update course
+//@route    PUT api/v1/courses/:id
+//@access   Private
+exports.updateCourse = asyncHandler(async (req, res, next) => {
+  let course = await Course.findById(req.params.id);
+
+  if (!course) {
+    next(
+      new ErrorResponse(`No course found with id of ${req.params.course}`, 404)
+    );
+  } else {
+    course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    res.status(200).json({
+      success: true,
+      data: course
+    });
+  }
+});

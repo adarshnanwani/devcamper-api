@@ -158,6 +158,16 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
     );
   }
 
+  // Make sure user is bootcamp owner or admin
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to upload photo for this bootcamp`,
+        401
+      )
+    );
+  }
+
   if (!req.files) {
     return next(new ErrorResponse('Please upload a file.', 400));
   }
@@ -190,6 +200,9 @@ exports.bootcampPhotoUpload = asyncHandler(async (req, res, next) => {
       photo: file.name
     });
 
-    res.status(200).json({ success: true, data: file.name });
+    res.status(200).json({
+      success: true,
+      data: file.name
+    });
   });
 });

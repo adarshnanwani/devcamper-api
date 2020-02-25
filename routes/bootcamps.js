@@ -8,8 +8,12 @@ const {
   getBootcampsInRadius,
   bootcampPhotoUpload
 } = require('../controllers/bootcamps');
+
+const { protect, authorize } = require('../middleware/auth');
+
 const advancedResults = require('../middleware/advancedResults');
 const Bootcamp = require('../models/Bootcamp');
+
 
 // Include other resource routers
 const courseRouter = require('./courses');
@@ -30,14 +34,15 @@ router
     }),
     getBootcamps
   )
-  .post(createBootcamp);
+  .post(protect, authorize('publisher', 'admin'), createBootcamp);
+
 
 router
   .route('/:id')
   .get(getBootcamp)
-  .put(updateBootcamp)
-  .delete(deleteBootcamp);
+  .put(protect, authorize('publisher', 'admin'), updateBootcamp)
+  .delete(protect, authorize('publisher', 'admin'), deleteBootcamp);
 
-router.route('/:id/photo').put(bootcampPhotoUpload);
+router.route('/:id/photo').put(protect, bootcampPhotoUpload);
 
 module.exports = router;
